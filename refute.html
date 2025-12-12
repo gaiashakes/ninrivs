@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Rive web component test</title></head>
+<body>
+  <!-- load official web-component (this registers <rive>) -->
+  <script src="https://unpkg.com/@rive-app/web-component@2.7.2"></script>
+
+  <!-- use your riv file hosted on GitHub raw -->
+  <rive id="rv" src="https://raw.githubusercontent.com/gaiashakes/ninrivs/main/mainbuttons.riv"
+        artboard="Artboard" state-machine="State Machine 1" autoplay
+        style="width:367px;height:63px;display:block;border:1px solid #ccc;"></rive>
+
+  <script>
+    // diagnostics: tell me whether the component registered and whether it exposes SMs
+    console.log('custom element registered?', !!window.customElements.get('rive'));
+    const rv = document.getElementById('rv');
+    console.log('<rive> element present?', !!rv);
+    // after it loads you can inspect via devtools: rv.__riveInstance or window.riveInstance (web-component stores instance differently)
+    rv.addEventListener('load', ()=> console.log('rive element load event fired'));
+    setTimeout(()=> console.log('window.rive (maybe):', !!window.rive), 2000);
+  </script>
+</body>
+</html>

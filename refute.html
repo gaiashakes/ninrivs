@@ -1,23 +1,49 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>Rive web component test</title></head>
+<head>
+  <meta charset="utf-8" />
+  <title>Rive Test</title>
+  <style>
+    body { background:#f5f5f5; padding:20px; }
+    #riveCanvas { border:1px solid #ccc; display:block; }
+  </style>
+</head>
 <body>
-  <!-- load official web-component (this registers <rive>) -->
-  <script src="https://unpkg.com/@rive-app/web-component@2.7.2"></script>
 
-  <!-- use your riv file hosted on GitHub raw -->
-  <rive id="rv" src="https://raw.githubusercontent.com/gaiashakes/ninrivs/main/mainbuttons.riv"
-        artboard="Artboard" state-machine="State Machine 1" autoplay
-        style="width:367px;height:63px;display:block;border:1px solid #ccc;"></rive>
+<h2>Rive Test File</h2>
 
-  <script>
-    // diagnostics: tell me whether the component registered and whether it exposes SMs
-    console.log('custom element registered?', !!window.customElements.get('rive'));
-    const rv = document.getElementById('rv');
-    console.log('<rive> element present?', !!rv);
-    // after it loads you can inspect via devtools: rv.__riveInstance or window.riveInstance (web-component stores instance differently)
-    rv.addEventListener('load', ()=> console.log('rive element load event fired'));
-    setTimeout(()=> console.log('window.rive (maybe):', !!window.rive), 2000);
-  </script>
+<!-- Canvas Rive will render into -->
+<canvas id="riveCanvas" width="367" height="63"></canvas>
+
+<!-- Load YOUR self-hosted runtime -->
+<script src="https://raw.githubusercontent.com/gaiashakes/ninrivs/main/rive.js"></script>
+
+<script>
+(async function() {
+
+  // Make sure runtime actually loaded
+  console.log("Global 'rive' object present?", typeof rive !== "undefined");
+
+  // URL of your .riv file
+  const rivURL = "https://raw.githubusercontent.com/gaiashakes/ninrivs/main/mainbuttons.riv";
+
+  // Fetch animation file
+  const buffer = await fetch(rivURL).then(r => r.arrayBuffer());
+
+  // Create Rive instance
+  window.riveInstance = new rive.Rive({
+    buffer: buffer,
+    canvas: document.getElementById("riveCanvas"),
+    autoplay: true,
+    artboard: "Artboard",
+    stateMachines: ["State Machine 1"],
+    automaticallyHandleEvents: true
+  });
+
+  console.log("Rive instance created:", window.riveInstance);
+
+})();
+</script>
+
 </body>
 </html>

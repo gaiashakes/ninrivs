@@ -1,49 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>Rive Test</title>
-  <style>
-    body { background:#f5f5f5; padding:20px; }
-    #riveCanvas { border:1px solid #ccc; display:block; }
-  </style>
-</head>
+<head><meta charset="utf-8"><title>Rive test (safe load)</title></head>
 <body>
+  <h3>Rive safe-load test</h3>
+  <canvas id="riveCanvas" width="367" height="63" style="border:1px solid #ccc;display:block;"></canvas>
 
-<h2>Rive Test File</h2>
+  <!-- load your uploaded runtime first -->
+  <script src="https://raw.githubusercontent.com/gaiashakes/ninrivs/main/rive.js"></script>
 
-<!-- Canvas Rive will render into -->
-<canvas id="riveCanvas" width="367" height="63"></canvas>
+  <script>
+  (function waitForRive(){
+    // wait until the global 'rive' exists, up to a short timeout
+    const start = Date.now();
+    if (typeof window.rive !== 'undefined') return init();
+    const t = setInterval(()=> {
+      if (typeof window.rive !== 'undefined') { clearInterval(t); return init(); }
+      if (Date.now() - start > 5000) { clearInterval(t); console.error('rive runtime did not load within 5s'); }
+    }, 50);
 
-<!-- Load YOUR self-hosted runtime -->
-<script src="https://raw.githubusercontent.com/gaiashakes/ninrivs/main/rive.js"></script>
-
-<script>
-(async function() {
-
-  // Make sure runtime actually loaded
-  console.log("Global 'rive' object present?", typeof rive !== "undefined");
-
-  // URL of your .riv file
-  const rivURL = "https://raw.githubusercontent.com/gaiashakes/ninrivs/main/mainbuttons.riv";
-
-  // Fetch animation file
-  const buffer = await fetch(rivURL).then(r => r.arrayBuffer());
-
-  // Create Rive instance
-  window.riveInstance = new rive.Rive({
-    buffer: buffer,
-    canvas: document.getElementById("riveCanvas"),
-    autoplay: true,
-    artboard: "Artboard",
-    stateMachines: ["State Machine 1"],
-    automaticallyHandleEvents: true
-  });
-
-  console.log("Rive instance created:", window.riveInstance);
-
-})();
-</script>
-
+    async function init(){
+      console.log('rive runtime ready:', !!window.rive);
+      try {
+        const rivURL = 'https://raw.githubusercontent.com/gaiashakes/ninrivs/main/mainbuttons.riv';
+        const buf = await fetch(rivURL).then(r => r.arrayBuffer());
+        window.riveInstance = new rive.Rive({
+          buffer: buf,
+          canvas: document.getElementById('riveCanvas'),
+          autoplay: true,
+          artboard: 'Artboard',
+          stateMachines: ['State Machine 1'],
+          automaticallyHandleEvents: true
+        });
+        console.log('Rive instance created:', !!window.riveInstance && !!window.riveInstance.readyForPlaying);
+      } catch (err) {
+        console.error('Rive init error', err);
+      }
+    }
+  })();
+  </script>
 </body>
 </html>
